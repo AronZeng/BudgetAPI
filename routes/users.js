@@ -3,6 +3,7 @@ const router = express.Router()
 const User = require('../models/user')
 const request = require('request')
 require('dotenv').config()
+const bcrypt = require('bcrypt')
 
 //Get all users
 router.get('/', async (req, res) => {
@@ -21,18 +22,26 @@ router.get('/:id', (req, res) => {
 
 // Create one user
 router.post('/', async (req, res) => {
-    const user = new User({
-        name: req.body.name,
-        stocks: req.body.stocks
+
+    password = await bcrypt.hash(req.body.password, 2, async (err, hash) => {
+        if (err) {
+            res.json({message: err, test: "hi"})
+        }        
+        const user = new User({
+            name: req.body.name,
+            stocks: req.body.stocks,
+            username: req.body.username,
+            password: hash
+        })
+        try {
+            const newUser = await user.save()
+            res.status(201).json(newUser)
+        }
+        catch (error) {
+            res.status(400).json({message: error.message})
+        }
     })
-    
-    try {
-        const newUser = await user.save()
-        res.status(201).json(newUser)
-    }
-    catch (error) {
-        res.status(400).json({message: error.message})
-    }
+
 })
 
 // Update one user

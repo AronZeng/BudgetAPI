@@ -7,6 +7,14 @@ const userSchema = new mongoose.Schema({
     stocks: {
         type: Array,
         default: []
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
     }
 })
 
